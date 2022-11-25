@@ -1,0 +1,31 @@
+From e4fa1c2e36f2b2604a0f71b4f32292a32394aaa3 Mon Sep 17 00:00:00 2001
+From: Cyril PASCAL <cyril.pascal_github@m4x.org>
+Date: Thu, 26 Jul 2018 14:32:52 +0200
+Subject: [PATCH] Make code php 7.3 lint-compatible
+
+---
+ lib/Doctrine/ORM/UnitOfWork.php | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/lib/Doctrine/ORM/UnitOfWork.php b/lib/Doctrine/ORM/UnitOfWork.php
+index fcbd3ab942..93d6e956fe 100644
+--- a/lib/Doctrine/ORM/UnitOfWork.php
++++ b/lib/Doctrine/ORM/UnitOfWork.php
+@@ -2633,7 +2633,7 @@ public function createEntity($className, array $data, &$hints = array())
+                         $class->reflFields[$field]->setValue($entity, $data[$field]);
+                         $this->originalEntityData[$oid][$field] = $data[$field];
+ 
+-                        continue;
++                        break;
+                     }
+ 
+                     $associatedId = array();
+@@ -2662,7 +2662,7 @@ public function createEntity($className, array $data, &$hints = array())
+                         $class->reflFields[$field]->setValue($entity, null);
+                         $this->originalEntityData[$oid][$field] = null;
+ 
+-                        continue;
++                        break;
+                     }
+ 
+                     if ( ! isset($hints['fetchMode'][$class->name][$field])) {

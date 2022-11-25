@@ -1,0 +1,20 @@
+From: Jack Cherng <jfcherng@gmail.com>
+Date: Sat, 13 Jul 2019 00:56:28 +0800
+Subject: [PATCH] Fix access array offset on value of type null
+
+Reference: https://twitter.com/nikita_ppv/status/1148931277216800769
+
+Signed-off-by: Jack Cherng <jfcherng@gmail.com>
+
+--- a/lib/Doctrine/Common/Annotations/DocParser.php
++++ b/lib/Doctrine/Common/Annotations/DocParser.php
+@@ -964,7 +964,8 @@ private function Identifier()
+ 
+         $className = $this->lexer->token['value'];
+ 
+-        while ($this->lexer->lookahead['position'] === ($this->lexer->token['position'] + strlen($this->lexer->token['value']))
++        while (null !== $this->lexer->lookahead
++                && $this->lexer->lookahead['position'] === ($this->lexer->token['position'] + strlen($this->lexer->token['value']))
+                 && $this->lexer->isNextToken(DocLexer::T_NAMESPACE_SEPARATOR)) {
+ 
+             $this->match(DocLexer::T_NAMESPACE_SEPARATOR);

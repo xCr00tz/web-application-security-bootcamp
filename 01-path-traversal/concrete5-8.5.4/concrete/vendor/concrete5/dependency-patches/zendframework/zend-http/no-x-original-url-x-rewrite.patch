@@ -1,0 +1,50 @@
+From db28d37edcfc869c7e2c4e189efd789d18282025 Mon Sep 17 00:00:00 2001
+From: Matthew Weier O'Phinney <matthew@zend.com>
+Date: Mon, 11 Jun 2018 10:28:04 -0500
+Subject: [PATCH] Remove support for the X-Original-Url and X-Rewrite-Url headers
+
+This patch modifies the logic of `Zend\Http\PhpEnvironment\Request::detectRequestUri()`
+such that it will ignore the X-Original-Url and X-Rewrite-Url headers
+when marshaling the request URI.
+---
+ src/PhpEnvironment/Request.php | 18 ++----------------
+ 1 file changed, 2 insertions(+), 16 deletions(-)
+
+diff --git a/src/PhpEnvironment/Request.php b/src/PhpEnvironment/Request.php
+index 2cbef7e93..e27d81d27 100644
+--- a/src/PhpEnvironment/Request.php
++++ b/src/PhpEnvironment/Request.php
+@@ -436,18 +436,6 @@ class Request extends HttpRequest
+         $requestUri = null;
+         $server     = $this->getServer();
+ 
+-        // Check this first so IIS will catch.
+-        $httpXRewriteUrl = $server->get('HTTP_X_REWRITE_URL');
+-        if ($httpXRewriteUrl !== null) {
+-            $requestUri = $httpXRewriteUrl;
+-        }
+-
+-        // Check for IIS 7.0 or later with ISAPI_Rewrite
+-        $httpXOriginalUrl = $server->get('HTTP_X_ORIGINAL_URL');
+-        if ($httpXOriginalUrl !== null) {
+-            $requestUri = $httpXOriginalUrl;
+-        }
+-
+         // IIS7 with URL Rewrite: make sure we get the unencoded url
+         // (double slash problem).
+         $iisUrlRewritten = $server->get('IIS_WasUrlRewritten');
+@@ -456,12 +444,10 @@ class Request extends HttpRequest
+             return $unencodedUrl;
+         }
+ 
++        $requestUri = $server->get('REQUEST_URI');
++
+         // HTTP proxy requests setup request URI with scheme and host [and port]
+         // + the URL path, only use URL path.
+-        if (! $httpXRewriteUrl) {
+-            $requestUri = $server->get('REQUEST_URI');
+-        }
+-
+         if ($requestUri !== null) {
+             return preg_replace('#^[^/:]+://[^/]+#', '', $requestUri);
+         }

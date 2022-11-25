@@ -1,0 +1,31 @@
+From: Michele Locati <michele@locati.it>
+Date: Wed, 29 May 2019 18:26:58 +0200
+Subject: [PATCH] Fix idn_to_ascii/idn_to_utf8 deprecation warning
+
+Fix the "INTL_IDNA_VARIANT_2003 is deprecated" warning
+
+Co-Authored-By: Filippo Tessarotto <zoeslam@gmail.com>
+Co-Authored-By: Abdul Malik Ikhsan <samsonasik@gmail.com>
+
+--- a/src/EmailAddress.php
++++ b/src/EmailAddress.php
+@@ -535,6 +535,9 @@ class EmailAddress extends AbstractValidator
+     protected function idnToAscii($email)
+     {
+         if (extension_loaded('intl')) {
++            if (defined('INTL_IDNA_VARIANT_UTS46')) {
++                return (idn_to_ascii($email, 0, INTL_IDNA_VARIANT_UTS46) ?: $email);
++            }
+             return (idn_to_ascii($email) ?: $email);
+         }
+         return $email;
+@@ -554,6 +557,9 @@ class EmailAddress extends AbstractValidator
+             // the source string in those cases.
+             // But not when the source string is long enough.
+             // Thus we default to source string ourselves.
++            if (defined('INTL_IDNA_VARIANT_UTS46')) {
++                return idn_to_utf8($email, 0, INTL_IDNA_VARIANT_UTS46) ?: $email;
++            }
+             return idn_to_utf8($email) ?: $email;
+         }
+         return $email;

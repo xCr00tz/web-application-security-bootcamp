@@ -1,0 +1,86 @@
+From 473be1000f25aadcf09b815d7210707121e79681 Mon Sep 17 00:00:00 2001
+From: Michele Locati <michele@locati.it>
+Date: Thu, 29 Nov 2018 14:11:36 +0100
+Subject: [PATCH] Use break instead of continue in switch statements
+
+---
+ src/Generator/FileGenerator.php     |  6 +++---
+ src/Reflection/MethodReflection.php | 14 +++++++-------
+ 2 files changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/src/Generator/FileGenerator.php b/src/Generator/FileGenerator.php
+index f9dfba23..8eb8326b 100644
+--- a/src/Generator/FileGenerator.php
++++ b/src/Generator/FileGenerator.php
+@@ -132,13 +132,13 @@ class FileGenerator extends AbstractGenerator
+             switch (strtolower(str_replace(['.', '-', '_'], '', $name))) {
+                 case 'filename':
+                     $fileGenerator->setFilename($value);
+-                    continue;
++                    break;
+                 case 'class':
+                     $fileGenerator->setClass(($value instanceof ClassGenerator) ? $value : ClassGenerator::fromArray($value));
+-                    continue;
++                    break;
+                 case 'requiredfiles':
+                     $fileGenerator->setRequiredFiles($value);
+-                    continue;
++                    break;
+                 default:
+                     if (property_exists($fileGenerator, $name)) {
+                         $fileGenerator->{$name} = $value;
+diff --git a/src/Reflection/MethodReflection.php b/src/Reflection/MethodReflection.php
+index ecd654fc..3f8850b7 100644
+--- a/src/Reflection/MethodReflection.php
++++ b/src/Reflection/MethodReflection.php
+@@ -269,22 +269,22 @@ class MethodReflection extends PhpReflectionMethod implements ReflectionInterfac
+                         //closure test
+                         if ($firstBrace && $tokenType == "T_FUNCTION") {
+                             $body .= $tokenValue;
+-                            continue;
++                            break;
+                         }
+                         $capture = false;
+-                        continue;
++                        break;
+                     }
+                     break;
+ 
+                 case "{":
+                     if ($capture === false) {
+-                        continue;
++                        break;
+                     }
+ 
+                     if ($firstBrace === false) {
+                         $firstBrace = true;
+                         if ($bodyOnly === true) {
+-                            continue;
++                            break;
+                         }
+                     }
+ 
+@@ -293,7 +293,7 @@ class MethodReflection extends PhpReflectionMethod implements ReflectionInterfac
+ 
+                 case "}":
+                     if ($capture === false) {
+-                        continue;
++                        break;
+                     }
+ 
+                     //check to see if this is the last brace
+@@ -311,12 +311,12 @@ class MethodReflection extends PhpReflectionMethod implements ReflectionInterfac
+ 
+                 default:
+                     if ($capture === false) {
+-                        continue;
++                        break;
+                     }
+ 
+                     // if returning body only wait for first brace before capturing
+                     if ($bodyOnly === true && $firstBrace !== true) {
+-                        continue;
++                        break;
+                     }
+ 
+                     $body .= $tokenValue;

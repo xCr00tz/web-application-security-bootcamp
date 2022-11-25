@@ -1,0 +1,16 @@
+From: Filippo Tessarotto <zoeslam@gmail.com>
+Date: Fri, 29 Dec 2017 16:30:07 +0100
+Subject: [PATCH] Fix idn_to_ascii deprecation warning
+
+--- a/src/Header/AbstractAddressList.php
++++ b/src/Header/AbstractAddressList.php
+@@ -102,6 +102,9 @@ public function getFieldName()
+     protected function idnToAscii($domainName)
+     {
+         if (extension_loaded('intl')) {
++            if (defined('INTL_IDNA_VARIANT_UTS46')) {
++                return (idn_to_ascii($domainName, 0, INTL_IDNA_VARIANT_UTS46) ?: $domainName);
++            }
+             return (idn_to_ascii($domainName) ?: $domainName);
+         }
+         return $domainName;
