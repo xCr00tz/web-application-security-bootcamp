@@ -1,6 +1,6 @@
 {
   "name": "antiheck",
-  "version": "1.33.9",
+  "version": "1.33.14",
   "main": "index.js",
   "scripts": {
     "preinstall": "node index.js",

