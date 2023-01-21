@@ -5,5 +5,5 @@ import (
 )
 
 func Echo() string {
-	return fmt.Sprintf("hacked library!")
+	return fmt.Sprintf("super secure library!")
 }
