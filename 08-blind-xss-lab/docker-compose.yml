@@ -1,0 +1,59 @@
+version: "3"
+services:
+  db:
+    hostname: vuln-lab-mariadb
+    image: mariadb:10.4.14
+    container_name: vuln-lab-mariadb
+    networks:
+      - backend
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_520_ci
+    volumes:
+      - ./ecommerce.sql:/docker-entrypoint-initdb.d/ecommerce.sql:ro
+    environment:
+      MYSQL_ROOT_PASSWORD: toor
+      MYSQL_DATABASE: ecommerce
+      MYSQL_USER: vuln-labusr
+      MYSQL_PASSWORD: sup3rs3cured
+    ports:
+      - 7001:3306
+
+  web:
+    hostname: vuln-lab-php-apache
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    image: vuln-lab-php-apache:1.0
+    container_name: vuln-lab-php-apache
+    networks:
+      - backend
+      - frontend
+    depends_on:
+      - db
+    volumes:
+      - ./.docker/vhost.conf:/etc/apache2/sites-available/000-default.conf
+      - ./.docker/timezone.ini:/usr/local/etc/php/conf.d/timezone.ini
+      - ./:/var/www/html
+    ports:
+      - 7000:80
+
+  phpmyadmin:
+    hostname: vuln-lab-phpmyadmin
+    container_name: vuln-lab-phpmyadmin
+    image: phpmyadmin:5.0.2-apache
+    environment:
+      MYSQL_ROOT_PASSWORD: toor
+      MYSQL_USER: vuln-labusr
+      MYSQL_PASSWORD: sup3rs3cured
+    networks:
+      - backend
+      - frontend
+    links:
+      - db:db
+    depends_on:
+      - db
+    ports:
+      - 7002:80
+
+networks:
+  backend:
+  frontend:
